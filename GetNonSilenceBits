@@ -1,0 +1,38 @@
+form Extract non-silent intervals
+	comment Tweak the single parameter below and look at output
+ 	boolean Write_output 0
+	real Noise_level -25
+endform
+
+outdir$="Users/mohinish/Desktop/deconcat/"
+mainsound = selected("Sound", -1)
+mainsoundname$ = selected$("Sound", -1)
+To TextGrid (silences)...  100 0.01  'noise_level' 0.1 0.15 x sounding
+plus mainsound
+Extract intervals where... 1 no "is not equal to" x
+
+n=numberOfSelected("Sound")
+printline 'n' non-empty segments
+
+for i to n
+	subsound'i' = selected("Sound",i)
+endfor
+
+for i to n
+	select subsound'i'
+	ss$ = selected$("Sound",-1)
+	sndlen = Get end time
+	Edit
+	editor Sound 'ss$'
+	Move cursor to... 'sndlen'
+	Move start of selection to nearest zero crossing
+	Cut
+	Move cursor to... 0
+	Move end of selection to nearest zero crossing
+	Cut
+	Close
+	endeditor
+	if write_output
+	printline Write to WAV file... 'outdir$''ss$'
+	endif
+endfor
